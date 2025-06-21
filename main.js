@@ -6,6 +6,7 @@ const gridSize = 20;
 const tileCount = canvas.width / gridSize;
 
 let gameRunning = true;
+let paused = false;
 let snake = [{ x: 10, y: 10 }];
 let food = generateFood();
 let dx = 0;
@@ -17,8 +18,10 @@ let Speed = 10;
 function animate() {
   requestAnimationFrame(animate);
 
-  if (++frame % Speed !== 0)return;
-    
+  if (paused || !gameRunning) return;
+
+  if (++frame % Speed !== 0) return;
+
   if (gameRunning) {
     update();
   }
@@ -37,7 +40,7 @@ function update() {
     snake.some((segment) => segment.x === head.x && segment.y === head.y)
   ) {
     gameRunning = false;
-    if(!gameRunning) gameOverSound.play();
+    if (!gameRunning) gameOverSound.play();
     return;
   }
 
@@ -127,17 +130,22 @@ function restartGame() {
 
 // Controls
 document.addEventListener("keydown", (e) => {
-  console.log(e)
+  console.log(e);
+  if (e.key === "p" || e.key === "P" || e.code === "Space") {
+    paused = !paused;
+    return;
+  }
+
   if (!gameRunning && e.key === "Enter") {
     console.log("restarting game");
     restartGame();
     return;
   }
   //speed
-  if(e.key === '+' ){
-    Speed = Math.max(1, Speed - 1)
-  }else if(e.key === '-'){
-    Speed += 1
+  if (e.key === "+") {
+    Speed = Math.max(1, Speed - 1);
+  } else if (e.key === "-") {
+    Speed += 1;
   }
   if (gameRunning) {
     switch (e.key) {
@@ -168,22 +176,33 @@ document.addEventListener("keydown", (e) => {
     }
   }
   if (gameRunning) {
-  switch (e.key.toLowerCase()) {
-    case "a": 
-      if (dx === 0) { dx = -1; dy = 0; }
-      break;
-    case "z": 
-      if (dy === 0) { dx = 0; dy = 1; }
-      break;
-    case "d": 
-      if (dx === 0) { dx = 1; dy = 0; }
-      break;
-    case "s": 
-      if (dy === 0) { dx = 0; dy = -1; }
-      break;
+    switch (e.key.toLowerCase()) {
+      case "a":
+        if (dx === 0) {
+          dx = -1;
+          dy = 0;
+        }
+        break;
+      case "z":
+        if (dy === 0) {
+          dx = 0;
+          dy = 1;
+        }
+        break;
+      case "d":
+        if (dx === 0) {
+          dx = 1;
+          dy = 0;
+        }
+        break;
+      case "s":
+        if (dy === 0) {
+          dx = 0;
+          dy = -1;
+        }
+        break;
+    }
   }
-}
-
 });
 
 animate();
